@@ -1,0 +1,73 @@
+New code:
+
+; The below program will accept two decimal digits and ;add them (you will replace the add routine with your ;rep-add multiply routine for unsigned numbers).
+; Just assemble and start the program. While it's ;running, type two digits.
+; The program will stop with the answer in the A ;register (in hex, of course).
+
+define sum $800 ;address of sum (this will be product ;for your mul routine)
+
+start1:
+ldy #$0
+
+delay:  ;wait for a decimal digit (0-9)to be pressed
+lda #$ff
+sta $ff
+
+delay1:
+lda $ff
+cmp #$ff
+beq delay1
+
+start2:
+LDA $ff
+CMP #$30
+BMI not_a_digit
+CMP #$3a
+BPL not_a_digit
+eor #$30
+iny
+cpy #2
+beq call_mul
+tax
+
+not_a_digit:
+jmp delay
+
+call_mul:
+tay
+txa
+tsx
+pha
+tya
+tsx
+pha
+jsr mul
+pla    ;clean stack
+pla     ;clean stack
+jmp endm
+
+mul:  ; put your multiply routine here
+INPUT:
+lda $100, X ;1st number
+sta $0801
+lda $101, X ;2nd number
+sta $0802
+
+MULT:
+tax ; A still contains the 2nd number.
+; it will be used for the multiplier,
+; (the loop counter)
+clc ; set up the first addition
+lda #$0 ; clear the A-reg
+MUL_LOOP:
+adc $0801 ; add the 1st number,
+; which is the multiplicand
+dex ; decrement the counter
+bne MUL_LOOP ; are we done? no, then loop again
+sta sum
+nop
+rts
+
+endm:
+lda sum  ; register A should contain the sum of the two         ;digits (e.g., 3+5=8, 4+7=b, etc.)
+brk

@@ -1,0 +1,34 @@
+INPUT:
+lda  #$03	; input 1st 
+sta  $0800
+lda  #$02	; input 2nd 
+sta  $0802
+
+		; Find the smallest value and make it the multiplier
+lda  $0800
+cmp  $0802
+bcc  SECOND_SMALLER
+		; If the first number is smaller, swap the values
+lda  $0800
+sta  $0804 ; Save the first number in the product location
+lda  $0802
+sta  $0800 ; Copy the second number to the first number location
+lda  $0804 ; Copy the first number from the product location
+sta  $0802 ; to the second number location
+SECOND_SMALLER:
+lda  $0800	; set the multiplier to the smallest value
+sta  $0804
+
+MULT:
+tax	; A still contains the 2nd number.	
+	; it will be used for the multiplier,
+	; (the loop counter)
+clc	; set up the first addition
+lda #$0 ; clear the a-reg
+MUL_LOOP:
+adc $0802 	; add the 2nd number, 
+		; which is the multiplier
+dex	; decrement the counter
+bne  MUL_LOOP 	
+sta $0804	; store the answer
+brk

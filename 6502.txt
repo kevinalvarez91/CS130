@@ -1,0 +1,73 @@
+lda #$01
+sta $0806
+
+Input1:
+lda  #$02
+bmi InvertInput1
+
+Input2:
+sta  $0800 
+lda  #$05
+bmi InvertInput2
+
+MAIN:
+sta  $0802 
+clc
+lda $0800
+sbc $0802
+bmi SWAPINPUT
+
+MULT:
+lda $0802
+tax
+clc
+lda #$0 
+
+MUL_LOOP:
+adc $0800
+dex
+bne  MUL_LOOP
+jmp EXIT
+
+SWAPINPUT:
+ldx $0800
+ldy $0802
+stx $0802
+sty $0800
+
+ldx #$0
+ldy #$0
+jmp MULT
+
+brk 
+
+InvertInput1:
+ldx $0806
+dex
+stx $0806
+eor #$ff
+clc
+adc #$01
+jmp Input2
+
+InvertInput2:
+ldx $0806
+dex
+stx $0806
+eor #$ff
+clc
+adc #$01
+jmp Main
+
+EXIT:
+sta $0804
+lda $0806
+beq InvertProduct
+brk
+
+InvertProduct:
+lda $0804
+eor #$ff
+adc #$01
+sta $0804
+brk

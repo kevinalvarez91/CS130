@@ -1,0 +1,181 @@
+S23 Lab 3
+6502 adc, sbc, and flags
+Part I.
+
+Step 1:		Go to https://skilldrick.github.io/easy6502/ .
+
+Step 2:		Copy the following routine to the emulator:
+
+		;Program name: SOLVE (num1+ num2) - (num3 + num4)
+;Description: Add two pair of numbers and subtract ;the sum of the second pair from the sum of the ;first pair
+
+;Variables: num1, num2, num3, num2, num4, sum1, ;sum2, pairsdiff 
+
+;input section
+
+LDA #$01	;get num1
+STA $0800
+LDA #$05	;get num2
+STA $0801
+LDA #$02	;get num3
+STA $0802
+LDA #$03	;get num4
+STA $0803
+
+;start of add routine
+
+;add num1 and num2, (sum1 = num1 + num2)
+LDA $0800
+ADC $0801
+STA $0804
+
+;add num3 and num4, (sum2 = num3 + num4)
+LDA $0802
+ADC $0803
+STA $0805
+
+;subtract (pairsdiff = sum1 - sum2)
+LDA $0804
+SBC $0805
+STA $0806
+
+BRK
+Step 3:		Check the “Monitor” check box.
+
+Step 4:		Enter “0800” in the “Start” entry box.
+
+Step 5:		Assemble the program.
+
+Step 6:		Run the program.
+Part II.
+
+For the following cases, remember that num1 is in address $0800, num2 is in $0801, num3 is in $802, num4 is in $0803, sum1 is in $0804, sum2 is in $0805, and pairsdiff is in $0806. You will look at the numbers as unsigned (Case xu) and signed (case xs).
+
+For each case, put the values for num1 thru num4 in the input section of the program. The first case is already in the program. Then fill in the values for sum1, sum2, and pairsdiff as specified.
+
+
+Unsigned numbers:
+
+Case 1u: num1 = $01, num2 = $05, num3 = $02, and num4 = $03
+sum1 = $06 hex, 00000110 binary, 6 decimal
+sum2 = $05 hex, 00000101 binary, 5 decimal
+pairsdiff = $00 hex, 00000000 binary, 0 decimal
+C = 1, V = 0, N = 0, Z = 1
+
+
+
+Case 2u: num1 = $0f, num2 = $7e, num3 = $0c, and num4 = $01
+sum1 = $8d hex, 10001101 binary, 141 decimal
+sum2 = $0d hex, 00001101 binary, 13 decimal
+pairsdiff = $7f hex, 1111111 binary, 127 decimal
+C = 1, V = 1, N = 1, Z = 0
+
+Case 3u: num1 = $d0, num2 = $eb, num3 = $a2, and num4 = $17
+sum1 = $bb hex, 10111011 binary, 187 decimal
+sum2 = $ba hex, 10111010 binary, 186 decimal
+pairsdiff = $00 hex, 00000000 binary, 0 decimal
+C = 1, V = 0, N = 0, Z = 1
+
+
+Case 4u:  num1 = $4b, num2 = $53, num3 =$71, and num4 = $1f 
+sum1 = 9e hex, 10011110 binary, 158 decimal
+sum2 = 90 hex, 10010000 binary, 144 decimal
+pairsdiff = 0e hex, 00001110 binary, 14 decimal
+C = 1, V = 0, N = 0, Z = 0
+
+Signed numbers:
+
+Case 1s:  num1 = $01 , num2 = $05, num3 = $02, and num4 = $03
+sum1 = 06 hex, 00000110 binary, 6 decimal
+sum2 = 05 hex, 00000101 binary, 5 decimal
+pairsdiff = 00 hex, 00000000 binary, 00 decimal
+C = 1, V = 0, N = 0, Z = 1
+
+
+Case 2s:  num1 = $0f, num2 = $7e , num3 = $0c, and num4 =  $01
+sum1 = 8d hex, 10001101 binary, 141 decimal
+sum2 = 0d hex, 00001101 binary, 13 decimal
+pairsdiff = 7f hex, 01111111 binary, 127 decimal
+C = 1, V = 1, N = 0, Z = 0
+
+
+
+Case 3s:  num1 = $d0, num2 = $eb, num3 = $a2, and num4 = $17 
+sum1 = $bb hex, 1011 10111  binary, -69 decimal
+sum2 = $ba hex, 1011 1010  binary, -70 decimal
+pairsdiff = $00 hex, 0000 0000 binary, 0 decimal
+C = 1, V = 0, N = 0, Z = 1
+
+
+
+
+Case 4s:  num1 = $4b, num2 = $53, num3 =$71, and num4 = $1f
+sum1 = $9e, 1001 1110 , -93 decimal
+sum2 = $90, 1001 0000, -112 decimal
+pairsdiff = $0d, 0001101, 13 decimal
+C = 1, V = 0, N = 0, Z = 0
+Part III.
+
+In Part II, one or more of the variables sum1, sum2, or pairsdiff have a wrong value.
+
+List which Cases and which variable(s) are wrong.
+	In Case 2s the value of pairsfiff was a incorrect value. In Case 1u the value of sum2 is incorrect. In Case 3u the value of sum2 is incorrect. Case 4u the value of pairsdiff is incorrect. Case 1s none of the variables have an incorrect value. Case 2s, the value of sum1 is incorrect. Case 3s the value of sum2 is incorrect. 
+
+For each case with an incorrect value for one or more variables, explain why; and if it is fixable, fix it. (“fixable” means that a problem is a programming error; it doesn’t mean an overflow or a carry occurred an giving an incorrect 8-bit answer.
+	For Case 1u, The value of sum2 is incorrect. The error occurred because the binary addition of num3 and num4 resulted in a carry that was not accounted for in the subsequent addition. The sum of num3 and num4 is $05, which is equal to 0000 0101 in binary. When this is added to num2 ($81), the carry from the second bit is not taken into account, resulting in an incorrect sum of $86. To fix this, we need to ensure that the carry from the addition of num3 and num4 is added to the sum of num2 and num1. The correct value of sum2 is $88. For Case 2u, The value of pairsdiff is incorrect. The error occurred because the difference between num1 and num3 was calculated incorrectly. The correct difference is $03, which is equal to 0000 0011 in binary. However, the given value of pairsdiff is $fe, which is equal to 1111 1110 in binary. This suggests that instead of subtracting num3 from num1, num1 was subtracted from num3. To fix this, we need to calculate the correct difference between num1 and num3, which is $03. Case 3u, The value of sum2 is incorrect. The error occurred because the carry from the addition of num3 and num4 was not accounted for in the subsequent addition of num2 and num1. The correct sum of num3 and num4 is $b9, which is equal to 1011 1001 in binary. When this is added to num2 and num1, the carry from the eighth bit is not taken into account, resulting in an incorrect sum of $ebd0. To fix this, we need to ensure that the carry from the addition of num3 and num4 is added to the sum of num2 and num1. The correct value of sum2 is $ecd0. For Case 4u, The value of pairsdiff is incorrect. The error occurred because the difference between num1 and num3 was calculated incorrectly. The correct difference is $da, which is equal to 1101 1010 in binary. However, the given value of pairsdiff is $38, which is equal to 0011 1000 in binary. This suggests that instead of subtracting num3 from num1, num1 was subtracted from num3. To fix this, we need to calculate the correct difference between num1 and num3, which is $da. For Case 2s, The value of sum1 is incorrect. The error occurred because the binary addition of num2 and num1 resulted in a carry that was not accounted for in the subsequent addition of num3 and num4. The sum of num2 and num1 is $8d, which is equal to 1000 1101 in binary. When this is added to num3 and num4, the carry from the eighth bit is not taken into account, resulting in an incorrect sum of $7f0f. To fix this, we need to ensure that the carry from the addition of num2 and num1 is added to the sum of num3 and num4. The correct value of sum1 is $0d.
+
+ 
+ADC – Add Memory to Accumulator with Carry
+
+This instruction adds the value of memory and carry, from the previous operation, to the value of the accumulator. It stores the result in the accumulator.
+
+The symbolic representation for this instruction is: A + M + C → A. This instruction affects the accumulator; it sets the carry flag (C) when the sum of a binary add exceeds 255. Otherwise, the carry is reset. The overflow flag (V) is set when the sign or bit 7 is changed due to the result exceeding +127 or –128, otherwise, overflow is reset. The negative flag(N) is set if the accumulator result contains bit 7 on, otherwise the negative flag is reset. The zero flag(Z) is set if the accumulator result is 0, otherwise the zero flag is reset.
+
+When the ADC instruction is used in single precision (1 byte) addition, there will
+normally be no carry; therefore, the programmer must ensure there is no carry before using the ADC
+instruction by resetting the carry flag using the CLC (Clear Carry, or reset carry to 0) instruction.
+
+
+NOTE: “set” means set the value to “1”; “reset” and “clear” both 	mean set the value to “0”.
+
+In the following examples of signed arithmetic it should be noted that
+operations are occurring on a 7-bit field of numbers and that any carry
+generated out of that field will reside in the eighth bit – not in the carry
+flag discussed during the add operations. The generation of a carry out
+of the field is the same as when adding two 8-bit numbers, except for
+the fact that the normal carry flag does not correctly represent the fact
+that the field has been exceeded. This is because the true carry from
+adding the two 7-bit numbers resides in the sign bit position. Therefore,
+the carry flag has no real meaning. Instead, there is a separate flag, the
+overflow flag, used to indicate when a carry from 7 bits has occurred
+and allows the user to write correction programs.
+
+In each example, the negative numbers are in two's complement form.
+Also included in each result will be the status of the carry and overflow
+flags. The overflow flag is set whenever the sign bit (bit 7) is changed as
+a result of the operation.
+
+Example 1: Add 2 positive numbers with no overflow
+
+ 	 0000 	0101	 +5 (A)
+ 	 0000 	0111 	+7 (M)
+Carry = 0 	0000   1100   +12 (A)
+Overflow = 0 “0” in bit 7 indicates positive result.
+Note that both the carry and overflow flag remain cleared.
+
+
+Example 2: Add 2 positive numbers with overflow
+
+0111  1111  	+127 (A)
+0000 0010 	+ 2 (M)
+Carry = 0 	1000 0001	 “–127” (A)
+Overflow = 1 “1” in bit 7 indicates negative result and the two's complement of the result is 127; however, the overflow flag is set indicating the allowable range was exceeded in the addition.
+
+Therefore, examination of the overflow indicated that the result was in fact not negative but that the bit 7 position represented an overflow beyond the value of 127. Hence the user is flagged of an incorrect result and a correction routine (program) must follow.
+
+
+Example 3: Add positive and negative number with positive result
+0000 0101 	+5 (A)
+1111 1101 	–3 (M)
+Carry = 1 	0000 0010 	+2 (A)
+Overflow = 0 “0” in bit 7 indicates positive result. (Recall that though the carry flag is set, it has no meaning in signed operations.)

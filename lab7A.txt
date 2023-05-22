@@ -1,0 +1,46 @@
+; [$0800] = 8-bit integer (and the lo-byte of product)
+; [$0802] = 8-bit integer
+;Output:
+; [$0801] = bits 15 to 8 of the product of [$0800] * [$0802] (hi-byte of product)
+; [$0800] = bits 7 to 0 of the product of [$0800] * [$0802] (lo-byte of product)
+
+
+MAIN:
+LDA #$7
+TSX
+PHA
+LDA #$23
+TSX
+PHA
+JSR input
+JSR MUL
+JMP endm
+
+INPUT:
+;$0800:
+LDA $100,X
+STA $0800
+;$0802:
+INX     ;THIS IS WHAT I CHANGED MAKE SURE TO BOLD
+LDA $100,X  ;BOLD THIS AS WELL
+STA $0802
+;$0801:
+LDA #$00
+STA $0801
+RTS
+
+MUL:
+LDA #$0
+LDX #$8
+LSR $0800
+L1: BCC L2
+CLC
+ADC $0802
+L2: ROR
+ROR $0800
+DEX
+BNE L1
+STA $0801
+RTS
+
+endm:

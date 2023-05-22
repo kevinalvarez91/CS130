@@ -1,0 +1,53 @@
+Lab 2CS 130, Spring 2023 (50 pts.)
+(Answers should be in red)  PART I:    Instructions, 6502 (16 pts., 4 pts. ea.)
+Go to Easy 6502, Instructions 
+(https://skilldrick.github.io/easy6502/index.html#instructions )
+
+Assemble the routine and display the disassembly window.
+ What new information does the disassembly show you?
+
+Answer: At first I see the assembly language, with some comments however it changes to show the address, as well as the hexdump. It also shows the assembly language on the side, as well as the address that the instruction is pointing too. The hexdump is in hexadecimal. 
+
+Step thru the program (execute one instruction at a time) by Checking the Debugger checkbox. Write what changes in the register area of the simulator (the area with the Debugger checkbox) I’ve done the first one as an example.	
+
+Instruction: LDA #$c0
+What changed?:	“A” changed from $00 to $c0; “PC” changed from $0600 to $602; “00110000” changed to “10110000”.
+
+Instruction: TAX
+What changed? : X changed from $00 to $c0. PC changed to $0603. 
+
+Instruction: INX
+What changed? : X changed  from $c0 to $c1, PC changed to $0604. 
+
+Instruction: ADC #$c4
+What changed? : 10110000 changed to 10110001, PC changed to $0606. A changed to $84. 
+ 
+PART II:    Branching, 6502 (14 pts.; 6 pts for B.1, 4 pts ea. For B. and B.3)
+Go to Easy 6502, Branching 
+(https://skilldrick.github.io/easy6502/index.html#branching )
+
+Assemble the program and step thru it. You have probably noticed that several of the instructions are repeated. 
+
+List all of the instructions that are repeated.
+
+ANSWER:   DEX, CPX, STX 
+
+
+ How many times did they repeat?
+
+  	ANSWER:	5
+
+Change CPX $02. How many times do the instructions repeat now?
+
+ANSWER: 6
+
+Experiment: Try different changes and observe the different responses. Try to figure out why the changes in responses occur. (Nothing to turn in.)
+
+
+Part IV: Similarities (8 pts.)
+
+What LegV8 instruction is similar to the 6502 LDA instruction?
+	The 6502 LDA instruction and the LDUR are comparable. A 32-bit value is loaded into memory by the LDUR and stored in a register at a position identified by an address in a register plus an offset value. This is comparable to the LDA instruction, which loads an 8-bit value into the accumulator from a memory location identified by an address in a register.
+
+What 6502 instruction is similar to the LegV8 instruction B.GE?
+	Some branch instructions in the 6502 architecture resemble B.GE. If the outcome of the prior operation was positive, one option is BPL, which branches to a label. In the event that the outcome is higher than or equal to zero, this can be used to construct a branch.

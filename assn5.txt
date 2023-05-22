@@ -1,0 +1,36 @@
+CS 130
+
+Exercises:
+
+The following snippet is supposed to pass a value to the subroutine add_one on the stack and return the result in register A. 
+
+lda #$45 	; simulated input 
+pha		; push input on the stack 
+jsr add_one 	; call add_one 
+brk
+
+Add_one:
+pla
+clc
+adc #$1
+rts
+
+
+Here are the results:
+
+A=$06 X=$00 Y=$00
+SP=$ff PC=$4508
+NV-BDIZC
+00110000
+
+Notice that the PC has an address that is not part of the code (see disassembly) and that A HAS $06 instead of $46.
+
+
+What was the top of the stack after PHA?
+After PHA, the top of the stack would be $45 (the value that was pushed onto the stack).
+What was on the top of the stack after JSR?
+	The address for the instruction that comes after JSR, $0605, and comes before the BRK instruction, $0606 is pushed to the stack when JSR is called, which is why $05 was on top of the stack. The stack's top value is $05 because the stack pointer only refers to one byte, and the last byte loaded was the bottom byte of the location $0605 (which was the final loaded byte).
+What was actually popped(pulled by the PLA?
+When PLA is executed, $45 is popped from the stack and loaded into the accumulator (register A). So the actual value that was pulled from the stack is $05. 
+
+Ptsps: Since the return address was pushed onto the stack after the input value, the stack pointer (SP) was pointing to the lower byte of the return address after the JSR instruction. When the PLA instruction was executed, it pulled the lower byte of the return address from the stack and loaded it into the accumulator, overwriting the input value that was pushed onto the stack earlier. The actual return address was then constructed from the value that was pushed onto the stack (which was the input value) and the upper byte of the return address that was already on the stack, resulting in the unexpected return address and program behavior.

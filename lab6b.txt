@@ -1,0 +1,50 @@
+Optimize the Multiplying by 2 inputs
+	Currently, the second number input is always used as the loop counter. This means, for example, that if you enter 5 first and then                   30,  you go thru the loop    30 times.  If 30 is entered first followed by 5, the loop is run  5 times. Modify the routine so that no                          matter what numbers are entered the smallest number is  used as the loop counter. We did this for our rep-add multiply routine.
+TURN IN YOUR CODE and two screenshots showing 5 and 30 being entered both ways. (25 pts.)
+	CODE
+	INP
+	STA NUM1
+	INP 
+	STA NUM2
+	SUB NUM1
+	BRP SWAP
+
+
+	LOOP       LDA TOTAL
+	ADD NUM1
+	STA TOTAL
+	LDA NUM2
+	SUB ONE
+	STA NUM2
+	BRP LOOP
+	LDA TOTAL
+	SUB NUM1
+	STA TOTAL
+	OUT
+	HLT
+
+
+	SWAP    LDA NUM2
+	STA TOTAL
+	LDA NUM1
+	SUB ONE
+	STA NUM2
+	LDA TOTAL
+	STA NUM1
+
+
+	BRA LOOP
+
+
+	NUM1    DAT
+	NUM2    DAT
+	ONE     DAT 1
+	TOTAL   DAT 0
+
+
+
+	B. Find the size of the numbers the LMC uses
+	Currently, we don't know the range of numbers that the LMC uses. Find out and then determine the number of bit required.  There                 are a number of approaches that can be used, but it might be more efficient  to use the largest signed positive number for n-bits and               then add 1. If the answer comes out negative (or some incorrect value) you may have found the number of bits. (The number of bits                 just tested times two to get the negative numbers.)  This assumes that the LMC isn't just adding memory to get bigger numbers.
+TURN IN the process or algorithm you used to get your answer. Explain the answer and give the number of bits you found (if there was a limit found).   (25 pts.)
+
+	LMC limit is 1000000000000000000000 x 1 = 1, So the limit is 999999999999999999999 x 1 = 999999999999999999999. However this doesn’t hold true. I think that the program is actually expanding memory depending on the input. I am unsure if that is true because I wasn’t able to consistently break the program with a maximum value. I kept on squaring values until I arrive at the conclusion that there isn’t a maximum value. The number simply keep increasing and while sometimes an error occurs such as above, it is not a consistent error. Rather than a limitation with the LMC, I think it is a limitation of the code itself, rather than with the little man computer. Because the fact that any algorithm I tried, such as manually increasing the number as well as squaring the numbers ended up with both similar results (inconsistantancy).Therefore leading me to the conclusion that the LMC has no quantifiable upper limit.

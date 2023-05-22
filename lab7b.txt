@@ -1,0 +1,41 @@
+Instructions: Use the following LegV8 program to answer the questions that
+follow. Before executing, set the SP (X28) to 8000.
+ADDI X0,XZR, #7 //simulated input; set X0 to the value of the argument n that is being passed to fact;
+// 7 is the default
+BL fact
+B endm
+fact:
+SUBI X28, X28, #16 // adjust stack for 2 items
+STUR X30, [X28,#8] // save the return address
+STUR X0, [X28,#0] // save the argument n
+SUBIS XZR,X0, #1 // test for n < 1
+B.GE L1 // if n >= 1, go to L1
+ADDI X1,XZR, #1 // return 1
+ADDI X28,X28,#16 // pop 2 items off stack
+BR X30 // return to caller
+L1:
+SUBI X0,X0,#1 // n >= 1: argument gets (n - 1)
+BL fact // call fact with (n - 1)
+LDUR X0, [X28,#0] // return from BL: restore argument n
+LDUR X30, [X28,#8] // restore the return address
+ADDI X28, X28, #16 // adjust stack pointer to pop 2 items
+MUL X1,X0,X1 // return n * fact (n - 1)
+BR X30 // return to the caller
+endm:
+
+Question 1: When running the program, a number is repeatedly pushed on the stack. What is this
+number? What is it, data or a return address?
+The fact procedure was called at number 52, which was the return address of the instruction. In order to build a recursive process, we do this. As we move back up the stack, we continue to multiply the values in registers X0 and X1.
+
+Question 2: How many times is the number referenced in Question 1 pushed on the stack when the argument passed to fact is 7? Is 10? Is 41?
+I saw 52 to 7 times in memory so the argument passed to the fact is 7. 
+
+Question 3: Are the answers in Question 2 related to the answer in Question 1?
+Yes, the answers in Question 2 are related to the answer in Question 1. They are connected since they are both referring to the same number, which is a return address. The number listed in Question 1 serves as the return address for the instruction that keeps dialing fact (BL fact) over and over again. The return address of the very first command at the top that is titled fact is the number I indicated in Question 2.
+
+Question 4: What are the first two numbers multiplied when using 7 as the argument?
+The numbers are 1 and 1. 
+
+Question 5: What are the last two numbers multiplied when using 7 as the argument?
+
+The numbers are 7 and 720. 

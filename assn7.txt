@@ -1,0 +1,29 @@
+ Compare the following pairs of instructions' opcodes (use the Green Card)
+ 
+A. ADD X7, X1,  X2
+OPCODE:  458h  = 100 0101 1000
+B.  ADDI, X7, #4
+OPCODE:   488h-489h = 100 1000 1000 or 100 1000 1001
+100 1000 100
+100 0101 100 
+C. AND 450h = 10001010000 (11 bit)
+D. ANDI 490h-491h = 1001001000 (10bit)
+E. SUB 658h = 11001011000 (11 bit) 
+F. SUBI 688h-689h = 1101000100 (10 bit)
+G. ORR 550h = 10101010000 (11 bit)
+H. ORRI 590h- 591h = 1011001000 (10 bit)
+I. EOR 650h = 11001010000 (11 bit)
+J. EORI 690h-691h = 1101001000 (10 bit) 
+
+
+EC:
+
+Extra credit (20 points) if you can explain how the decoding circuitry can tell the difference between immediate addressing mode (I) and register addressing mode (R).
+The decoding circuitry can tell the difference between the immediate addressing mode and the register addressing mode by examining the opcode and certain fields included 
+in the instruction to differentiate between the immediate addressing mode (I) and the register addressing mode (R). When using instantaneous addressing, the instruction 
+uses an immediate value that is already included in the instruction. The instant instructions are found by looking at the instruction's opcode, and the appropriate fields,
+such the immediate value field, are verified to extract the constant value. In contrast, while using register addressing mode, the instruction works with register-stored data.
+The elements inside the instruction, such as the source register fields, are used to identify the precise registers involved in the operation once the opcode has been analyzed 
+to identify register instructions. The decoding circuitry can therefore precisely detect whether an instruction follows the register addressing method or the immediate addressing
+mode by looking at the opcode and pertinent fields. This distinction is important because it allows the circuitry to appropriately retrieve the operands from the proper sources
+and execute the instruction as intended. 

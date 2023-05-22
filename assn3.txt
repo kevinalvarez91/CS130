@@ -1,0 +1,19 @@
+CS 130
+February 27 2023
+
+1.-17subscript10 = 11101111subscript2
+Invert: 00010000subscript2
+Add 1: 00010001subscript2
+Hexadecimal: 0x11=17subscript10
+
+2.101subscript10 = 01100101subscript2
+Invert: 10011010
+Add 1: 10011011
+9Bsubscript16
+Decimal: -101subscript10
+
+3.1subscript10 = 00000001subscript2
+Invert: 11111110
+Add 1: 11111111
+EFsubscript0
+Decimal: -1subscript10

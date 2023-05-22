@@ -1,0 +1,258 @@
+CS 130
+
+The multiplicand is stored at memory address 8000.  The multiplier is stored at memory 	address 8008. Use register X5 as the base address. (Initialize X5 with 8000 before 	starting the emulation).
+
+Input section:
+		     LDUR X1, [X5, #0]        	// load the multiplicand
+		     LDUR X2, [X5, #8] 		// load the multiplier
+     		    ADDI  X2, X2, #1		// add 1 to the multiplier to compensate for the 							//emulator quirk
+	                 ADD X7, XZR,XZR		// clear the product
+	   
+	MulLoop:
+	  	    ADD X7, X1, X7
+	   	    ADDIS X2, X2, #-1
+	   	    B.EQ Exit
+	  	    B MulLoop
+	Exit:
+
+
+Part II. Speed up the code 
+
+Modify the code above to ensure that ethe smallest value becomes the 
+multiplier. 
+
+Input section:
+		     LDUR X1, [X5, #0]        	// load the multiplicand
+		     LDUR X2, [X5, #8] 		// load the multiplier
+     		    ADDI  X2, X2, #1		// add 1 to the multiplier to compensate for the 												//emulator quirk
+	                 ADD X7, XZR,XZR		// clear the product
+	   		SUBS XZR, X2, X1
+			B.MI Swap
+
+	MulLoop:
+	  	    ADD X7, X1, X7
+	   	    ADDIS X2, X2, #-1
+	   	    B.EQ Exit
+	  	    B MulLoop
+
+	Swap:
+	LDUR X1, [X5, #8]
+	LDUR X2, [X5, #0]
+	ADDI X2, X2, #1
+
+	B MulLoop
+
+	Exit:
+
+Part III. 
+Improve the code so that signed numbers can be used
+
+		     LDUR X1, [X5, #0]
+			ADDS XZR, X1, XZR      	// load the multiplicand
+			B.MI InvertX1
+			Braci1:
+
+		     LDUR X2, [X5, #8] 
+			ADDS XZR, X2, XZR
+			B.MI InvertX2
+			Braci2:	
+	
+			STUR X1, [X5, #0]
+			STUR X2, [X5, #8]		// load the multiplier
+     		    	ADDI  X2, X2, #1	    // add 1 to the multiplier to compensate for the 							
+
+						//emulator quirk
+	                 ADD X7, XZR, XZR		// clear the product
+	   		SUBS XZR, X1, X2
+			B.MI Swap
+			
+	
+	MulLoop:
+	  	    ADD X7, X1, X7
+	   	    ADDIS X2, X2, #-1
+	   	    B.EQ Exit
+	  	    B MulLoop
+
+	Swap:
+	LDUR X1, [X5, #8]
+	LDUR X2, [X5, #0]
+	ADDI X2, X2, #1
+	
+	
+
+	B MulLoop
+	
+	InvertX1: 
+	SUB X1, XZR, X1
+	ADDI X4, X4, #1
+	B Braci1
+
+	InvertX2:
+	SUB X2, XZR, X2
+	ADDI X4, X4, #1
+	B Braci2
+
+	InvertX7:
+	SUB X7, XZR, X7	
+	
+
+		
+	Exit:
+	SUBI X4, X4, #1
+	CBZ X4, InvertX7
+
+
+Part IV. 6502 rep-add multiply
+
+Step 1: Use the code below in the Easy Skildrick emulator
+
+	;This routine will multiply two numbers by repeated
+	; adding,  (Ex.: 5 x 2 = 2 + 2 + 2 + 2 + 2,
+	; or, 5 x 2 = 5 + 5)
+	; the multiplier will be the loop counter,
+	; the multiplicand will be repetiitively added.
+	; Keep the numbers from $00 - $0F*
+	
+	INPUT:
+	lda  #$0f	; input 1st number 
+	sta  $0800
+	lda  #$05	; input 2nd number
+	sta  $0802
+	
+	MULT:
+	tax	; A still contains the 2nd number.	
+		; it will be used for the multiplier,
+		; (the loop counter)
+	clc	; set up the first addition
+	lda #$0 ; clear the A-reg
+	MUL_LOOP:
+	adc $0800 	; add the 1st number, 
+			; which is the multiplicand
+	dex	; decrement the counter
+	bne  MUL_LOOP 	; are we done? no, then loop again
+	sta $0804	; store the answer, the product
+	brk
+	
+	; * when an n-bit numbers are multiplied, the 
+	; product will always fit in 2n bits; 2n bits
+	; will be needed for the product.
+	; In this routine, we multiply 4-bit numbers,
+	; so the product needs 8 bits.
+
+
+    Part V. Speed up the code 
+
+    INPUT:
+lda  #$03	; input 1st number 
+sta  $0800
+lda  #$02	; input 2nd number
+sta  $0802
+
+; Find the smallest value and make it the multiplier
+lda  $0800
+cmp  $0802
+bcc  SECOND_SMALLER
+; If the first number is smaller, swap the values
+lda  $0800
+sta  $0804 ; Save the first number in the product location
+lda  $0802
+sta  $0800 ; Copy the second number to the first number location
+lda  $0804 ; Copy the first number from the product location
+sta  $0802 ; to the second number location
+SECOND_SMALLER:
+lda  $0800	; set the multiplier to the smallest value
+sta  $0804
+
+MULT:
+tax	; A still contains the 2nd number.	
+	; it will be used for the multiplier,
+	; (the loop counter)
+clc	; set up the first addition
+lda #$0 ; clear the A-reg
+MUL_LOOP:
+adc $0802 	; add the 2nd number, 
+		; which is the multiplier
+dex	; decrement the counter
+bne  MUL_LOOP 	; are we done? no, then loop again
+sta $0804	; store the answer, the product
+brk
+
+
+Part VI: Improve the code so that signed number can be used
+
+	
+lda #$01
+sta $0806
+
+Input1:
+lda  #$02
+bmi InvertInput1
+
+Input2:
+sta  $0800 
+lda  #$05
+bmi InvertInput2
+
+MAIN:
+sta  $0802 
+clc
+lda $0800
+sbc $0802
+bmi SWAPINPUT
+
+MULT:
+lda $0802
+tax
+clc
+lda #$0 
+
+MUL_LOOP:
+adc $0800
+dex
+bne  MUL_LOOP
+jmp EXIT
+
+SWAPINPUT:
+ldx $0800
+ldy $0802
+stx $0802
+sty $0800
+
+ldx #$0
+ldy #$0
+jmp MULT
+
+brk 
+
+InvertInput1:
+ldx $0806
+dex
+stx $0806
+eor #$ff
+clc
+adc #$01
+jmp Input2
+
+InvertInput2:
+ldx $0806
+dex
+stx $0806
+eor #$ff
+clc
+adc #$01
+jmp Main
+
+EXIT:
+sta $0804
+lda $0806
+beq InvertProduct
+brk
+
+InvertProduct:
+lda $0804
+eor #$ff
+adc #$01
+sta $0804
+brk
+
+
